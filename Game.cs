@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace HelloWorld
@@ -15,47 +16,78 @@ namespace HelloWorld
         //Run the game
         public void Run()
         {
+            Start();
 
             while(_gameOver == false)
             {
-
+                Update();
             }
 
         }
+
+
+        //Made up example used to look around and make explore.
+        void explore()
+        {
+            char input = ' ';
+
+            Console.WriteLine("You find a tunnel in front of you. It looks pretty dark." +
+                "Inside, there are two paths. Which one do you take?");
+            Console.ReadKey();
+            GetInput(input, "1. Left", "2. Right");
+            Console.ReadKey();
+            if(input =='1')
+            {
+
+                Console.WriteLine("You went left and found a small room. In it is a wizard and he looks at you");
+                Console.ReadKey();
+                Console.Clear();
+            }
+            else if(input == '2')
+            {
+                Console.WriteLine("You go right and continue moving in the tunnel. You hear fading sounds from the left...");
+                Console.ReadKey();
+                Console.Clear();
+            }
+        }
+        
         //This function handles the battles for our ladder. roomNum is used to update the our opponent to be the enemy in the current room. 
         //turnCount is used to keep track of how many turns it took the player to beat the enemy
         bool StartBattle(int roomNum, ref int turnCount)
         {
             //initialize default enemy stats
-            int enemyHealth = 0;
-            int enemyAttack = 0;
+            int enemyHealth = 80;
+            int enemyAttack = 15;
             int enemyDefense = 0;
             string enemyName = "";
             //Changes the enemy's default stats based on our current room number. 
             //This is how we make it seem as if the player is fighting different enemies
             switch (roomNum)
             {
-                case 0:
+                case '0':
                     {
                         enemyHealth = 100;
                         enemyAttack = 20;
                         enemyDefense = 5;
                         enemyName = "Wizard";
+                        break;
                     }
-                case 1:
+                case '1':
                     {
                         enemyHealth = 80;
                         enemyAttack = 30;
                         enemyDefense = 5;
                         enemyName = "Troll";
+                        break;
                     }
-                case 2
+                case '2':
                     {
                         
                         enemyHealth = 200;
                         enemyAttack = 40;
                         enemyDefense = 10;
                         enemyName = "Giant";
+                        break;
                     }
             }
 
@@ -67,7 +99,7 @@ namespace HelloWorld
                 PrintStats(enemyName, enemyHealth, enemyAttack, enemyDefense);
 
                 //Get input from the player
-                char input;
+                char input = ' ';
                 GetInput(input, "Attack", "Defend");
                 //If input is 1, the player wants to attack. By default the enemy blocks any incoming attack
                 if(input == '1')
@@ -127,7 +159,7 @@ namespace HelloWorld
         //Gets input from the player
         //Out's the char variable given. This variables stores the player's input choice.
         //The parameters option1 and option 2 displays the players current chpices to the screen
-        void GetInput(out char input,string option1, string option2)
+        void GetInput(char input,string option1, string option2)
         {
             //Initialize input
             input = ' ';
@@ -154,17 +186,26 @@ namespace HelloWorld
             //Displays context based on which room the player is in
             switch (roomNum)
             {
-                case 0:
+                case '0':
                     {
                         Console.WriteLine("A wizard blocks your path");
+                        Console.ReadKey();
+                        Console.Clear();
+                        break;
                     }
-                case 1:
+                case '1':
                     {
                         Console.WriteLine("A troll stands before you");
+                        Console.ReadKey();
+                        Console.Clear();
+                        break;
                     }
-                case 2
+                case '2':
                     {
                         Console.WriteLine("A giant has appeared!");
+                        Console.ReadKey();
+                        Console.Clear();
+                        break;
                     }
                 default:
                     {
@@ -179,7 +220,7 @@ namespace HelloWorld
                 LevelUp(turnCount);
                 ClimbLadder(roomNum++);
             }
-            _gameOver = true;
+            _gameOver = false;
 
         }
 
@@ -206,6 +247,7 @@ namespace HelloWorld
                             _playerHealth = 120;
                             _playerDefense = 10;
                             _playerDamage = 40;
+                            break;
                         }
                     case '2':
                         {
@@ -213,13 +255,15 @@ namespace HelloWorld
                             _playerHealth = 40;
                             _playerDefense = 2;
                             _playerDamage = 70;
+                            break;
                         }
-                    case '3'
+                    case '3':
                         {
                             _playerName = "Joedazz";
                             _playerHealth = 200;
                             _playerDefense = 5;
                             _playerDamage = 25;
+                            break;
                         }
                         //If an invalid input is selected display and input message and input over again.
                     default:
@@ -227,7 +271,7 @@ namespace HelloWorld
                             Console.WriteLine("Invalid input. Press any key to continue.");
                             Console.Write("> ");
                             Console.ReadKey();
-                            break;
+                            break;                          
                         }
                 }
                 Console.Clear();
@@ -243,12 +287,14 @@ namespace HelloWorld
         public void Start()
         {
             SelectCharacter();
+
         }
 
         //Repeated until the game ends
         public void Update()
         {
-            ClimbLadder(0);   
+            explore();
+            ClimbLadder(1);
         }
 
         //Performed once when the game ends
