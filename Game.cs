@@ -5,6 +5,13 @@ using System.Text;
 
 namespace HelloWorld
 {
+   struct player
+    {
+        public int health;
+        public int damage;
+
+    }
+    
     class Game
     {
         bool _gameOver = false;
@@ -13,6 +20,7 @@ namespace HelloWorld
         int _playerDamage = 20;
         int _playerDefense = 10;
         int levelScaleMax = 5;
+    
         //Run the game
         public void Run()
         {
@@ -22,6 +30,7 @@ namespace HelloWorld
             {
                 Update();
             }
+            End();
 
         }
 
@@ -34,7 +43,7 @@ namespace HelloWorld
             Console.WriteLine("You find a tunnel in front of you. It looks pretty dark." +
                 "Inside, there are two paths. Which one do you take?");
             Console.ReadKey();
-            GetInput(input, "1. Left", "2. Right");
+            GetInput(out input, "1. Left", "2. Right", "Pick one");
             Console.ReadKey();
             if(input =='1')
             {
@@ -48,7 +57,9 @@ namespace HelloWorld
                 Console.WriteLine("You go right and continue moving in the tunnel. You hear fading sounds from the left...");
                 Console.ReadKey();
                 Console.Clear();
+                
             }
+            
         }
         
         //This function handles the battles for our ladder. roomNum is used to update the our opponent to be the enemy in the current room. 
@@ -64,7 +75,7 @@ namespace HelloWorld
             //This is how we make it seem as if the player is fighting different enemies
             switch (roomNum)
             {
-                case '0':
+                case 0:
                     {
                         enemyHealth = 100;
                         enemyAttack = 20;
@@ -72,7 +83,7 @@ namespace HelloWorld
                         enemyName = "Wizard";
                         break;
                     }
-                case '1':
+                case 1:
                     {
                         enemyHealth = 80;
                         enemyAttack = 30;
@@ -80,7 +91,7 @@ namespace HelloWorld
                         enemyName = "Troll";
                         break;
                     }
-                case '2':
+                case 2:
                     {
                         
                         enemyHealth = 200;
@@ -89,10 +100,18 @@ namespace HelloWorld
                         enemyName = "Giant";
                         break;
                     }
+                case 3:
+                    {
+                        enemyHealth = 450;
+                        enemyAttack = 80;
+                        enemyDefense = 20;
+                        enemyName = "Goku";
+                        break;
+                    }
             }
 
             //Loops until the player or the enemy is dead
-            while(_playerHealth >= 0 || enemyHealth >= 0)
+            while(_playerHealth >= 0 && enemyHealth >= 0)
             {
                 //Displays the stats for both charactersa to the screen before the player takes their turn
                 PrintStats(_playerName, _playerHealth, _playerDamage, _playerDefense);
@@ -100,12 +119,14 @@ namespace HelloWorld
 
                 //Get input from the player
                 char input = ' ';
-                GetInput(input, "Attack", "Defend");
+                GetInput(out input, "Attack", "Defend", "Pick one");
                 //If input is 1, the player wants to attack. By default the enemy blocks any incoming attack
                 if(input == '1')
                 {
-                    BlockAttack(enemyHealth, _playerDamage, enemyDefense);
-                    Console.WriteLine("You dealt " + _playerDamage + " damage.");
+
+                    Console.Clear();
+                    BlockAttack(ref enemyHealth, ref _playerDamage, ref enemyDefense);
+                    Console.WriteLine("You dealt " + (_playerDamage - enemyDefense) + " damage.");
                     Console.Write("> ");
                     Console.ReadKey();
                 }
@@ -113,8 +134,8 @@ namespace HelloWorld
                 //called instead of simply decrementing the health by the enemy's attack value.
                 else
                 {
-                    BlockAttack(_playerHealth, enemyAttack, _playerDefense);
-                    Console.WriteLine(enemyName + " dealt " + enemyAttack + " damage.");
+                    BlockAttack(ref _playerHealth, ref enemyAttack, ref _playerDefense);
+                    Console.WriteLine(enemyName + " dealt " + (enemyAttack -_playerDefense) + " damage.");
                     Console.Write("> ");
                     Console.ReadKey();
                     turnCount++;
@@ -134,7 +155,7 @@ namespace HelloWorld
 
         }
         //Decrements the health of a character. The attack value is subtracted by that character's defense
-        void BlockAttack(int opponentHealth, int attackVal, int opponentDefense)
+        void BlockAttack(ref int opponentHealth, ref int attackVal, ref int opponentDefense)
         {
             int damage = attackVal - opponentDefense;
             if(damage < 0)
@@ -151,7 +172,15 @@ namespace HelloWorld
             if(scale <= 0)
             {
                 scale = 1;
+                
             }
+            Console.WriteLine("You defeated the enemy!!");
+            Console.ReadKey();
+            Console.Clear();
+            Console.WriteLine("You leveled up!!" +
+                " Please pick a stat to increase");
+            Console.ReadKey();
+            Console.Clear();
             _playerHealth += 10 * scale;
             _playerDamage *= scale;
             _playerDefense *= scale;
@@ -159,22 +188,40 @@ namespace HelloWorld
         //Gets input from the player
         //Out's the char variable given. This variables stores the player's input choice.
         //The parameters option1 and option 2 displays the players current chpices to the screen
-        void GetInput(char input,string option1, string option2)
+        void GetInput(out char input, string option1, string option2, string query)
         {
+            Console.WriteLine(query);
             //Initialize input
             input = ' ';
             //Loop until the player enters a valid input
             while(input != '1' && input != '2')
+            {
                 Console.WriteLine("1." + option1);
                 Console.WriteLine("2." + option2);
                 Console.Write("> ");
                 input = Console.ReadKey().KeyChar;
+            }
+                
         }
+        void GetInput(out char input, string option1, string option2)
+        {
+
+            input = ' ';
+            while(input != '1' && input != '2')
+            {
+                Console.WriteLine("1." + option1);
+                Console.WriteLine("2." + option2);
+                Console.Write("> ");
+                input = Console.ReadKey().KeyChar;
+            }
+        }
+
+        
 
         //Prints the stats given in the parameter list to the console
         void PrintStats(string name, int health, int damage, int defense)
         {
-            Console.WriteLine("/n" + name);
+            Console.WriteLine(name);
             Console.WriteLine("Health: " + health);
             Console.WriteLine("Damage: " + damage);
             Console.WriteLine("Defense: " + defense);
@@ -186,23 +233,30 @@ namespace HelloWorld
             //Displays context based on which room the player is in
             switch (roomNum)
             {
-                case '0':
+                case 0:
                     {
                         Console.WriteLine("A wizard blocks your path");
                         Console.ReadKey();
                         Console.Clear();
                         break;
                     }
-                case '1':
+                case 1:
                     {
                         Console.WriteLine("A troll stands before you");
                         Console.ReadKey();
                         Console.Clear();
                         break;
                     }
-                case '2':
+                case 2:
                     {
                         Console.WriteLine("A giant has appeared!");
+                        Console.ReadKey();
+                        Console.Clear();
+                        break;
+                    }
+                case 3:
+                    {
+                        Console.WriteLine("The one and only Goku has appeared!");
                         Console.ReadKey();
                         Console.Clear();
                         break;
@@ -218,9 +272,9 @@ namespace HelloWorld
             if(StartBattle(roomNum, ref turnCount))
             {
                 LevelUp(turnCount);
-                ClimbLadder(roomNum++);
+                ClimbLadder(roomNum + 1);
             }
-            _gameOver = false;
+            _gameOver = true;
 
         }
 
@@ -287,14 +341,18 @@ namespace HelloWorld
         public void Start()
         {
             SelectCharacter();
+            
 
         }
 
         //Repeated until the game ends
         public void Update()
         {
-            explore();
-            ClimbLadder(1);
+            
+            ClimbLadder(0);
+            
+            
+
         }
 
         //Performed once when the game ends
