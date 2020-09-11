@@ -1,25 +1,44 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
 namespace HelloWorld
 {
-   struct player
+    struct Player
     {
-        public int health;
-        public int damage;
-
+        public string playerName;
+        public int playerHealth;
+        public int playerDamage;
+        public int playerDefense;
     }
+
+    struct item
+    {
+        public string name;
+        public int weaponDamage;
+        
+    }
+   
     
     class Game
     {
         bool _gameOver = false;
-        string _playerName = "Hero";
+        string playerName = "Player 1";
         int _playerHealth = 120;
         int _playerDamage = 20;
         int _playerDefense = 10;
         int levelScaleMax = 5;
+        Player player1;
+        Player player2;
+        item Buster_blade;
+        item Scythe;
+        
+        
+
+
+        
     
         //Run the game
         public void Run()
@@ -35,39 +54,14 @@ namespace HelloWorld
         }
 
 
-        //Made up example used to look around and make explore.
-        void explore()
-        {
-            char input = ' ';
-
-            Console.WriteLine("You find a tunnel in front of you. It looks pretty dark." +
-                "Inside, there are two paths. Which one do you take?");
-            Console.ReadKey();
-            GetInput(out input, "1. Left", "2. Right", "Pick one");
-            Console.ReadKey();
-            if(input =='1')
-            {
-
-                Console.WriteLine("You went left and found a small room. In it is a wizard and he looks at you");
-                Console.ReadKey();
-                Console.Clear();
-            }
-            else if(input == '2')
-            {
-                Console.WriteLine("You go right and continue moving in the tunnel. You hear fading sounds from the left...");
-                Console.ReadKey();
-                Console.Clear();
-                
-            }
-            
-        }
+        
         
         //This function handles the battles for our ladder. roomNum is used to update the our opponent to be the enemy in the current room. 
         //turnCount is used to keep track of how many turns it took the player to beat the enemy
         bool StartBattle(int roomNum, ref int turnCount)
         {
             //initialize default enemy stats
-            int enemyHealth = 80;
+            int player2playerHealth = 80;
             int enemyAttack = 15;
             int enemyDefense = 0;
             string enemyName = "";
@@ -77,7 +71,7 @@ namespace HelloWorld
             {
                 case 0:
                     {
-                        enemyHealth = 100;
+                        player2.playerHealth = 100;
                         enemyAttack = 20;
                         enemyDefense = 5;
                         enemyName = "Wizard";
@@ -85,7 +79,7 @@ namespace HelloWorld
                     }
                 case 1:
                     {
-                        enemyHealth = 80;
+                        player2.playerHealth = 80;
                         enemyAttack = 30;
                         enemyDefense = 5;
                         enemyName = "Troll";
@@ -94,7 +88,7 @@ namespace HelloWorld
                 case 2:
                     {
                         
-                        enemyHealth = 200;
+                        player2.playerHealth = 200;
                         enemyAttack = 40;
                         enemyDefense = 10;
                         enemyName = "Giant";
@@ -102,7 +96,7 @@ namespace HelloWorld
                     }
                 case 3:
                     {
-                        enemyHealth = 450;
+                        player2.playerHealth = 450;
                         enemyAttack = 80;
                         enemyDefense = 20;
                         enemyName = "Goku";
@@ -111,11 +105,11 @@ namespace HelloWorld
             }
 
             //Loops until the player or the enemy is dead
-            while(_playerHealth >= 0 && enemyHealth >= 0)
+            while(player1.playerHealth >= 0 && player2.playerHealth >= 0)
             {
                 //Displays the stats for both charactersa to the screen before the player takes their turn
-                PrintStats(_playerName, _playerHealth, _playerDamage, _playerDefense);
-                PrintStats(enemyName, enemyHealth, enemyAttack, enemyDefense);
+                PrintStats(player1.playerName, player1.playerHealth, player1.playerDamage, player1.playerDefense);
+                PrintStats(player2.playerName, player2.playerHealth, player2.playerDamage, player2.playerDefense);
 
                 //Get input from the player
                 char input = ' ';
@@ -125,8 +119,8 @@ namespace HelloWorld
                 {
 
                     Console.Clear();
-                    BlockAttack(ref enemyHealth, ref _playerDamage, ref enemyDefense);
-                    Console.WriteLine("You dealt " + (_playerDamage - enemyDefense) + " damage.");
+                    BlockAttack(ref player2.playerHealth, ref player1.playerDamage, ref player2.playerDefense);
+                    Console.WriteLine("You dealt " + (player1.playerDamage - player2.playerDefense) + " damage.");
                     Console.Write("> ");
                     Console.ReadKey();
                 }
@@ -134,8 +128,8 @@ namespace HelloWorld
                 //called instead of simply decrementing the health by the enemy's attack value.
                 else
                 {
-                    BlockAttack(ref _playerHealth, ref enemyAttack, ref _playerDefense);
-                    Console.WriteLine(enemyName + " dealt " + (enemyAttack -_playerDefense) + " damage.");
+                    BlockAttack(ref player1.playerHealth, ref player2.playerDamage, ref player1.playerDefense);
+                    Console.WriteLine(player2.playerName + " dealt " + (player2.playerDamage, -player1.playerDefense) + " damage.");
                     Console.Write("> ");
                     Console.ReadKey();
                     turnCount++;
@@ -143,7 +137,7 @@ namespace HelloWorld
                 }
                 Console.Clear();
                 //After the player attacks, the enemy takes its turn. Since the player decided not to defend, the block attack function is not called.
-                _playerHealth -= enemyAttack;
+                player1.playerHealth -= player2.playerDamage;
                 Console.WriteLine(enemyName + " dealt " + enemyAttack + " damage.");
                 Console.Write("> ");
                 Console.ReadKey();
@@ -216,15 +210,16 @@ namespace HelloWorld
             }
         }
 
-        
+
 
         //Prints the stats given in the parameter list to the console
-        void PrintStats(string name, int health, int damage, int defense)
+        //This is used for Player 1.
+        void PrintStats(string player1playerName, int player1playerHealth, int player1playerDamage, int player1playerDefense )
         {
-            Console.WriteLine(name);
-            Console.WriteLine("Health: " + health);
-            Console.WriteLine("Damage: " + damage);
-            Console.WriteLine("Defense: " + defense);
+            Console.WriteLine(player1.playerName);
+            Console.WriteLine("Health: " + player1.playerHealth);
+            Console.WriteLine("Damage: " + player1.playerDamage);
+            Console.WriteLine("Defense: " + player1.playerDefense);
         }
 
         //This is used to progress through our game. A recursive function meant to switch the rooms and start the battles inside them.
@@ -286,7 +281,7 @@ namespace HelloWorld
             while(input != '1' && input != '2' && input != '3')
             {
                 //Prints options
-                Console.WriteLine("Welcome! Please select a character.");
+                Console.WriteLine("Welcome Player 1! Choose your character.");
                 Console.WriteLine("1.Sir Kibble");
                 Console.WriteLine("2.Gnojoel");
                 Console.WriteLine("3.Joedazz");
@@ -297,26 +292,26 @@ namespace HelloWorld
                 {
                     case '1':
                         {
-                            _playerName = "Sir Kibble";
-                            _playerHealth = 120;
-                            _playerDefense = 10;
-                            _playerDamage = 40;
+                            player1.playerName = "Sir Kibble";
+                            player1.playerHealth= 120;
+                            player1.playerDefense = 10;
+                            player1.playerDamage = 40;
                             break;
                         }
                     case '2':
                         {
-                            _playerName = "Gnojoel";
-                            _playerHealth = 40;
-                            _playerDefense = 2;
-                            _playerDamage = 70;
+                            player1.playerName = "Gnojoel";
+                            player1.playerHealth = 40;
+                            player1.playerDefense = 2;
+                            player1.playerDamage = 70;
                             break;
                         }
                     case '3':
                         {
-                            _playerName = "Joedazz";
-                            _playerHealth = 200;
-                            _playerDefense = 5;
-                            _playerDamage = 25;
+                            player1.playerName = "Joedazz";
+                            player1.playerHealth = 200;
+                            player1.playerDefense = 5;
+                            player1.playerDamage = 25;
                             break;
                         }
                         //If an invalid input is selected display and input message and input over again.
@@ -331,7 +326,7 @@ namespace HelloWorld
                 Console.Clear();
             }
             //Prints the stats of the choosen character to the screen before the game begins to give the player visual feedback
-            PrintStats(_playerName,_playerHealth,_playerDamage,_playerDefense);
+            PrintStats(player1.playerName ,player1.playerHealth, player1.playerDamage, player1.playerDefense);
             Console.WriteLine("Press any key to continue.");
             Console.Write("> ");
             Console.ReadKey();
@@ -359,9 +354,14 @@ namespace HelloWorld
         public void End()
         {
             //If the player died print death message
-            if(_playerHealth <= 0)
+            if(player2.playerHealth <= 0)
             {
-                Console.WriteLine("Failure");
+                Console.WriteLine("Player 1 wins!");
+                return;
+            }
+            else if(player1.playerHealth <= 0)
+            {
+                Console.WriteLine("Player 2 wins!");
                 return;
             }
             //Print game over message
