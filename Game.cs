@@ -14,9 +14,9 @@ namespace HelloWorld
         public int playerDefense;
     }
 
-    struct item
+    struct weapon
     {
-        public string name;
+        public string weaponName;
         public int weaponDamage;
         
     }
@@ -25,15 +25,14 @@ namespace HelloWorld
     class Game
     {
         bool _gameOver = false;
-        string playerName = "Player 1";
         int _playerHealth = 120;
         int _playerDamage = 20;
         int _playerDefense = 10;
         int levelScaleMax = 5;
         Player player1;
         Player player2;
-        item Buster_blade;
-        item Scythe;
+        weapon chopsticks;
+        weapon scythe;
         
         
 
@@ -67,60 +66,25 @@ namespace HelloWorld
             string enemyName = "";
             //Changes the enemy's default stats based on our current room number. 
             //This is how we make it seem as if the player is fighting different enemies
-            switch (roomNum)
-            {
-                case 0:
-                    {
-                        player2.playerHealth = 100;
-                        enemyAttack = 20;
-                        enemyDefense = 5;
-                        enemyName = "Wizard";
-                        break;
-                    }
-                case 1:
-                    {
-                        player2.playerHealth = 80;
-                        enemyAttack = 30;
-                        enemyDefense = 5;
-                        enemyName = "Troll";
-                        break;
-                    }
-                case 2:
-                    {
-                        
-                        player2.playerHealth = 200;
-                        enemyAttack = 40;
-                        enemyDefense = 10;
-                        enemyName = "Giant";
-                        break;
-                    }
-                case 3:
-                    {
-                        player2.playerHealth = 450;
-                        enemyAttack = 80;
-                        enemyDefense = 20;
-                        enemyName = "Goku";
-                        break;
-                    }
-            }
+           
 
             //Loops until the player or the enemy is dead
             while(player1.playerHealth >= 0 && player2.playerHealth >= 0)
             {
                 //Displays the stats for both charactersa to the screen before the player takes their turn
                 PrintStats(player1.playerName, player1.playerHealth, player1.playerDamage, player1.playerDefense);
-                PrintStats(player2.playerName, player2.playerHealth, player2.playerDamage, player2.playerDefense);
+                PrintStatsP2(player2.playerName, player2.playerHealth, player2.playerDamage, player2.playerDefense);
 
                 //Get input from the player
                 char input = ' ';
-                GetInput(out input, "Attack", "Defend", "Pick one");
+                GetInput(out input, "Attack", "Defend", "Player 1's turn");
                 //If input is 1, the player wants to attack. By default the enemy blocks any incoming attack
                 if(input == '1')
                 {
 
                     Console.Clear();
                     BlockAttack(ref player2.playerHealth, ref player1.playerDamage, ref player2.playerDefense);
-                    Console.WriteLine("You dealt " + (player1.playerDamage - player2.playerDefense) + " damage.");
+                    Console.WriteLine(player1.playerName + " dealt "  + chopsticks.weaponDamage  +  (player1.playerDamage - player2.playerDefense) + " damage.");
                     Console.Write("> ");
                     Console.ReadKey();
                 }
@@ -129,7 +93,7 @@ namespace HelloWorld
                 else
                 {
                     BlockAttack(ref player1.playerHealth, ref player2.playerDamage, ref player1.playerDefense);
-                    Console.WriteLine(player2.playerName + " dealt " + (player2.playerDamage, -player1.playerDefense) + " damage.");
+                    Console.WriteLine(player2.playerName + " dealt " + chopsticks.weaponDamage  +  (player2.playerDamage - player1.playerDefense) + " damage.");
                     Console.Write("> ");
                     Console.ReadKey();
                     turnCount++;
@@ -137,11 +101,24 @@ namespace HelloWorld
                 }
                 Console.Clear();
                 //After the player attacks, the enemy takes its turn. Since the player decided not to defend, the block attack function is not called.
-                player1.playerHealth -= player2.playerDamage;
-                Console.WriteLine(enemyName + " dealt " + enemyAttack + " damage.");
-                Console.Write("> ");
-                Console.ReadKey();
-                turnCount++;
+                GetInput(out input, "Attack", "Defend", "Player 2's turn");
+                if (input == '1')
+                {
+                    BlockAttack(ref player1.playerHealth, ref player2.playerDamage, ref player1.playerDefense);
+                    Console.WriteLine(player2.playerName + " dealt " + chopsticks.weaponDamage  +  (player2.playerDamage - player1.playerDefense) + "damage");
+                    Console.Write("> ");
+                    Console.ReadKey();
+                }
+                else
+                {
+                    BlockAttack(ref player2.playerHealth, ref player1.playerDamage, ref player2.playerDefense);
+                    Console.WriteLine(player1.playerName + " dealt " + chopsticks.weaponDamage  +  (player1.playerDamage - player2.playerDefense) + "damage");
+                    Console.Write("> ");
+                    Console.ReadKey();
+                    turnCount++;
+                    Console.Clear();
+                }
+                
                 
             }
             //Return whether or not our player died
@@ -171,13 +148,7 @@ namespace HelloWorld
             Console.WriteLine("You defeated the enemy!!");
             Console.ReadKey();
             Console.Clear();
-            Console.WriteLine("You leveled up!!" +
-                " Please pick a stat to increase");
-            Console.ReadKey();
-            Console.Clear();
-            _playerHealth += 10 * scale;
-            _playerDamage *= scale;
-            _playerDefense *= scale;
+      
         }
         //Gets input from the player
         //Out's the char variable given. This variables stores the player's input choice.
@@ -221,6 +192,13 @@ namespace HelloWorld
             Console.WriteLine("Damage: " + player1.playerDamage);
             Console.WriteLine("Defense: " + player1.playerDefense);
         }
+        void PrintStatsP2(string player2playerName, int player2playerHealth, int player2playerDamage, int player2playerDefense )
+        {
+            Console.WriteLine(player2.playerName);
+            Console.WriteLine("Health: " + player2.playerHealth);
+            Console.WriteLine("Damage: " + player2.playerDamage);
+            Console.WriteLine("Defense: " + player2.playerDefense);
+        }
 
         //This is used to progress through our game. A recursive function meant to switch the rooms and start the battles inside them.
         void ClimbLadder(int roomNum)
@@ -230,28 +208,7 @@ namespace HelloWorld
             {
                 case 0:
                     {
-                        Console.WriteLine("A wizard blocks your path");
-                        Console.ReadKey();
-                        Console.Clear();
-                        break;
-                    }
-                case 1:
-                    {
-                        Console.WriteLine("A troll stands before you");
-                        Console.ReadKey();
-                        Console.Clear();
-                        break;
-                    }
-                case 2:
-                    {
-                        Console.WriteLine("A giant has appeared!");
-                        Console.ReadKey();
-                        Console.Clear();
-                        break;
-                    }
-                case 3:
-                    {
-                        Console.WriteLine("The one and only Goku has appeared!");
+                        Console.WriteLine("Round 1");
                         Console.ReadKey();
                         Console.Clear();
                         break;
@@ -273,45 +230,45 @@ namespace HelloWorld
 
         }
 
-        //Displays the character selection menu. 
-        void SelectCharacter()
+        //Displays the character selection menu for player 1
+        void SelectPlayer1Character()
         {
             char input = ' ';
             //Loops until a valid option is choosen
             while(input != '1' && input != '2' && input != '3')
             {
                 //Prints options
-                Console.WriteLine("Welcome Player 1! Choose your character.");
-                Console.WriteLine("1.Sir Kibble");
-                Console.WriteLine("2.Gnojoel");
-                Console.WriteLine("3.Joedazz");
+                Console.WriteLine("Welcome Player 1! Please select a character.");
+                Console.WriteLine("1.Sora");
+                Console.WriteLine("2.Link");
+                Console.WriteLine("3.Noctis");
                 Console.Write("> ");
                 input = Console.ReadKey().KeyChar;
-                //Sets the players default stats based on which character was picked
+                //Sets player 1's default stats based on which character was picked
                 switch (input)
                 {
                     case '1':
                         {
-                            player1.playerName = "Sir Kibble";
-                            player1.playerHealth= 120;
+                            player1.playerName = "Sora";
+                            player1.playerHealth= 200;
                             player1.playerDefense = 10;
-                            player1.playerDamage = 40;
+                            player1.playerDamage = 45;
                             break;
                         }
                     case '2':
                         {
-                            player1.playerName = "Gnojoel";
-                            player1.playerHealth = 40;
-                            player1.playerDefense = 2;
+                            player1.playerName = "Link";
+                            player1.playerHealth = 200;
+                            player1.playerDefense = 20;
                             player1.playerDamage = 70;
                             break;
                         }
                     case '3':
                         {
-                            player1.playerName = "Joedazz";
-                            player1.playerHealth = 200;
-                            player1.playerDefense = 5;
-                            player1.playerDamage = 25;
+                            player1.playerName = "Noctis";
+                            player1.playerHealth = 250;
+                            player1.playerDefense = 25;
+                            player1.playerDamage = 50;
                             break;
                         }
                         //If an invalid input is selected display and input message and input over again.
@@ -325,17 +282,146 @@ namespace HelloWorld
                 }
                 Console.Clear();
             }
-            //Prints the stats of the choosen character to the screen before the game begins to give the player visual feedback
+            //Prints the stats of player 1's character to the screen before the game begins to give the player visual feedback
             PrintStats(player1.playerName ,player1.playerHealth, player1.playerDamage, player1.playerDefense);
             Console.WriteLine("Press any key to continue.");
             Console.Write("> ");
             Console.ReadKey();
             Console.Clear();
         }
+
+        void SelectItemP1()
+        {
+            char input = ' ';
+            while (input != '1' && input != '2')
+            {
+                Console.WriteLine(player1.playerName + ",please pick a weapon ");
+                Console.WriteLine("1.Chopsticks");
+                Console.WriteLine("2.Scythe");
+                Console.Write("> ");
+                input = Console.ReadKey().KeyChar;
+                switch (input)
+                {
+                    case '1':
+                        {
+                            chopsticks.weaponName = "Chopsticks";
+                            chopsticks.weaponDamage = 20;
+                            break;
+                        }
+                    case '2':
+                        {
+                            scythe.weaponName = "scythe";
+                            scythe.weaponDamage = 20;
+                            break;
+                        }
+                    default:
+                        {
+                            Console.WriteLine("Invalid input. Press any key to continue.");
+                            Console.Write("> ");
+                            Console.ReadKey();
+                            break;
+                        }
+                }
+            }
+        }
+
+        void SelectItemP2()
+        {
+            char input = ' ';
+            while (input != '1' && input != '2')
+            {
+                Console.WriteLine(player2.playerName + ",please pick a weapon ");
+                Console.WriteLine("1.Chopsticks");
+                Console.WriteLine("2.Scythe");
+                Console.Write("> ");
+                input = Console.ReadKey().KeyChar;
+                switch (input)
+                {
+                    case '1':
+                        {
+                            chopsticks.weaponName = "Chopsticks";
+                            chopsticks.weaponDamage = 20;
+                            break;
+                        }
+                    case '2':
+                        {
+                            scythe.weaponName = "scythe";
+                            scythe.weaponDamage = 25;
+                            break;
+                        }
+                    default:
+                        {
+                            Console.WriteLine("Invalid input. Press any key to continue.");
+                            Console.Write("> ");
+                            Console.ReadKey();
+                            break;
+                        }
+                }
+            }
+        }
+
+        void SelectPlayer2Character()
+        {
+            char input = ' ';
+            while (input != '1' && input != '2' && input != '3')
+            {
+                Console.WriteLine("Welcome Player 2! Please select a character.");
+                Console.WriteLine("1.Sora");
+                Console.WriteLine("2.Link");
+                Console.WriteLine("3.Noctis");
+                Console.Write("> ");
+                input = Console.ReadKey().KeyChar;
+                switch (input)
+                {
+                    case '1':
+                        {
+                            player2.playerName = "Sora";
+                            player2.playerHealth = 200;
+                            player2.playerDefense = 10;
+                            player2.playerDamage = 45;
+                            break;
+                        }
+                    case '2':
+                        {
+                            player2.playerName = "Link";
+                            player2.playerHealth = 200;
+                            player2.playerDefense = 20;
+                            player2.playerDamage = 70;
+                            break;
+                        }
+                    case '3':
+                        {
+                            player2.playerName = "Noctis";
+                            player2.playerHealth = 250;
+                            player2.playerDefense = 25;
+                            player2.playerDamage = 50;
+                            break;
+                        }
+                    default:
+                        {
+                            Console.WriteLine("Invalid input. Press any key to continue");
+                            Console.Write("> ");
+                            Console.ReadKey();
+                            break;
+                        }
+
+                }
+                Console.Clear();
+            }
+            PrintStatsP2(player2.playerName, player2.playerHealth, player2.playerDamage, player2.playerDefense);
+            Console.WriteLine("Press any key to continue.");
+            Console.Write("> ");
+            Console.ReadKey();
+            Console.Clear();
+        }
+        
         //Performed once when the game begins
         public void Start()
         {
-            SelectCharacter();
+            SelectPlayer1Character();
+            SelectItemP1();
+            SelectPlayer2Character();
+            SelectItemP2();
             
 
         }
